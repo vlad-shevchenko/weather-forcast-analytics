@@ -1,0 +1,66 @@
+package weather.domain;
+
+import org.joda.time.DateTime;
+
+import javax.persistence.Embeddable;
+
+@Embeddable
+public class ForecastKey {
+
+    private String city;
+    private DateTime targetTime;
+    private DateTime forecastCreationTime;
+
+    private ForecastKey() {
+    }
+
+    public ForecastKey(String city, DateTime targetTime, DateTime forecastCreationTime) {
+        this.city = city;
+        this.targetTime = targetTime;
+        this.forecastCreationTime = forecastCreationTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ForecastKey that = (ForecastKey) o;
+
+        if (!city.equals(that.city)) return false;
+        if (!targetTime.equals(that.targetTime)) return false;
+        return forecastCreationTime.equals(that.forecastCreationTime);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = city.hashCode();
+        result = 31 * result + targetTime.hashCode();
+        result = 31 * result + forecastCreationTime.hashCode();
+        return result;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public DateTime getTargetTime() {
+        return targetTime;
+    }
+
+    public void setTargetTime(DateTime targetTime) {
+        this.targetTime = targetTime;
+    }
+
+    public DateTime getForecastCreationTime() {
+        return forecastCreationTime;
+    }
+
+    public void setForecastCreationTime(DateTime forecastCreationTime) {
+        this.forecastCreationTime = forecastCreationTime;
+    }
+}
