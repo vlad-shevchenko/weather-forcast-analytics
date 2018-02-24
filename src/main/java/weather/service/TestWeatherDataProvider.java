@@ -17,7 +17,7 @@ import static org.joda.time.Period.hours;
 public class TestWeatherDataProvider implements WeatherDataProvider {
     
     private double withVariation(double base) {
-        return withVariation(base, base * 0.1);
+        return withVariation(base, 0.1);
     }
 
     private double withVariation(double base, double maxD) {
@@ -27,14 +27,14 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
 
     @Override
     public CompletableFuture<ActualWeather> getCurrentWeather(String city) {
-        return CompletableFuture.completedFuture(new ActualWeather(new WeatherKey("Kiyv", new DateTime()),
+        return CompletableFuture.completedFuture(new ActualWeather(new WeatherKey(city, new DateTime()),
                 new WeatherData(withVariation(10.0), withVariation(0.9), withVariation(300), withVariation(5.0))));
     }
 
     @Override
     public CompletableFuture<List<Forecast>> getForecast(String city) {
         IntFunction<Forecast> weatherDataSupplier = (i) -> new Forecast(
-                new ForecastKey("Kyiv", new DateTime().plus(hours(i * 6)), new DateTime()),
+                new ForecastKey(city, new DateTime().plus(hours(i * 6)), new DateTime()),
                 new WeatherData(withVariation(10.0, i*0.05), withVariation(0.9, i*0.05), withVariation(300, i*0.05), withVariation(5.0, i*0.05)));
         return CompletableFuture.completedFuture(
                 IntStream.range(1, 15)
