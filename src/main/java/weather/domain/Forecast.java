@@ -2,16 +2,12 @@ package weather.domain;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 
 @Entity
 public class Forecast {
 
     @EmbeddedId
     private ForecastKey key;
-
-    @ManyToOne(optional = true)
-    private ActualWeather actualWeather;
 
     private WeatherData data;
 
@@ -45,16 +41,8 @@ public class Forecast {
         return key;
     }
 
-    public ActualWeather getActualWeather() {
-        return actualWeather;
-    }
-
     public WeatherData getData() {
         return data;
-    }
-
-    public void setActualWeather(ActualWeather actualWeather) {
-        this.actualWeather = actualWeather;
     }
 
 }
