@@ -3,9 +3,10 @@ package weather.domain;
 import org.joda.time.DateTime;
 
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @Embeddable
-public class WeatherKey {
+public class WeatherKey implements Serializable {
 
     private String city;
     private DateTime dateTime;
