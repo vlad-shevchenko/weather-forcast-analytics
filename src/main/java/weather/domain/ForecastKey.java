@@ -1,15 +1,20 @@
 package weather.domain;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
 public class ForecastKey implements Serializable {
 
+    @Column(length = 50)
     private String city;
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime targetTime;
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime forecastCreationTime;
 
     private ForecastKey() {
