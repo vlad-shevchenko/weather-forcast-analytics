@@ -3,23 +3,24 @@ package weather.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ConfigurationProperties(prefix = "app.weather")
 public class WeatherGatherService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherGatherService.class);
 
     private List<WeatherDataProvider> weatherDataProviders;
     private EntityManager entityManager;
-    @Value("${app.weather.cities}")
-    private List<String> cities;
+    private List<String> cities = new ArrayList<>();
 
     @Autowired
     public WeatherGatherService(List<WeatherDataProvider> weatherDataProviders, EntityManager entityManager) {
@@ -40,4 +41,7 @@ public class WeatherGatherService {
         );
     }
 
+    public List<String> getCities() {
+        return cities;
+    }
 }
