@@ -8,6 +8,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface WeatherDataProvider {
 
+    String getName();
+
     CompletableFuture<ActualWeather> getCurrentWeather(String city);
 
     CompletableFuture<List<Forecast>> getForecast(String city);

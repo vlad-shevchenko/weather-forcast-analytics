@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class ForecastKey implements Serializable {
 
     @Column(length = 50)
+    private String wdpName;
+    @Column(length = 50)
     private String city;
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime targetTime;
@@ -20,7 +22,8 @@ public class ForecastKey implements Serializable {
     private ForecastKey() {
     }
 
-    public ForecastKey(String city, DateTime targetTime, DateTime forecastCreationTime) {
+    public ForecastKey(String wdpName, String city, DateTime targetTime, DateTime forecastCreationTime) {
+        this.wdpName = wdpName;
         this.city = city;
         this.targetTime = targetTime;
         this.forecastCreationTime = forecastCreationTime;
@@ -33,6 +36,7 @@ public class ForecastKey implements Serializable {
 
         ForecastKey that = (ForecastKey) o;
 
+        if (!wdpName.equals(that.wdpName)) return false;
         if (!city.equals(that.city)) return false;
         if (!targetTime.equals(that.targetTime)) return false;
         return forecastCreationTime.equals(that.forecastCreationTime);
@@ -40,10 +44,19 @@ public class ForecastKey implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = city.hashCode();
+        int result = wdpName.hashCode();
+        result = 31 * result + city.hashCode();
         result = 31 * result + targetTime.hashCode();
         result = 31 * result + forecastCreationTime.hashCode();
         return result;
+    }
+
+    public String getWdpName() {
+        return wdpName;
+    }
+
+    public void setWdpName(String wdpName) {
+        this.wdpName = wdpName;
     }
 
     public String getCity() {
