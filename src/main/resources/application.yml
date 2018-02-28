@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost/weather-forecast-analytics?user=root
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: create
+
+app:
+  weather:
+    cities:
+      - name: Kyiv
+        longitude: 30.516666
+        latitude: 50.433334
+      - name: Paris
+        longitude: 2.35236
+        latitude: 48.856461
+      - name: New york
+        longitude: -74.005966
+        latitude: 40.714272
+      - name: Zaporizhya
+        longitude: 35.183331
+        latitude: 47.816669
