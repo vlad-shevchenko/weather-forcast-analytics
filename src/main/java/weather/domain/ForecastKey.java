@@ -12,8 +12,7 @@ public class ForecastKey implements Serializable {
 
     @Column(length = 50)
     private String wdpName;
-    @Column(length = 50)
-    private String city;
+    private City city;
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime targetTime;
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
@@ -22,7 +21,7 @@ public class ForecastKey implements Serializable {
     private ForecastKey() {
     }
 
-    public ForecastKey(String wdpName, String city, DateTime targetTime, DateTime forecastCreationTime) {
+    public ForecastKey(String wdpName, City city, DateTime targetTime, DateTime forecastCreationTime) {
         this.wdpName = wdpName;
         this.city = city;
         this.targetTime = targetTime;
@@ -59,11 +58,11 @@ public class ForecastKey implements Serializable {
         this.wdpName = wdpName;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 

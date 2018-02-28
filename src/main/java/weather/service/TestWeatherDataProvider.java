@@ -26,7 +26,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
     }
 
     @Override
-    public CompletableFuture<List<ActualWeather>> getCurrentWeather(Collection<String> cities) {
+    public CompletableFuture<List<ActualWeather>> getCurrentWeather(Collection<City> cities) {
         return CompletableFuture.completedFuture(
                 cities.stream().map(
                         city -> new ActualWeather(new WeatherKey(getName(), city, new DateTime()),
@@ -37,7 +37,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
     }
 
     @Override
-    public CompletableFuture<List<Forecast>> getForecast(Collection<String> cities) {
+    public CompletableFuture<List<Forecast>> getForecast(Collection<City> cities) {
         // I swear I don't do that in production
         return CompletableFuture.completedFuture(
                 cities.stream().flatMap(

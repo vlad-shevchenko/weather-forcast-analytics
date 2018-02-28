@@ -12,15 +12,14 @@ public class WeatherKey implements Serializable {
 
     @Column(length = 50)
     private String wdpName;
-    @Column(length = 50)
-    private String city;
+    private City city;
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime dateTime;
 
     private WeatherKey() {
     }
 
-    public WeatherKey(String wdpName, String city, DateTime dateTime) {
+    public WeatherKey(String wdpName, City city, DateTime dateTime) {
         this.wdpName = wdpName;
         this.city = city;
         this.dateTime = dateTime;
@@ -54,11 +53,11 @@ public class WeatherKey implements Serializable {
         this.wdpName = wdpName;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 

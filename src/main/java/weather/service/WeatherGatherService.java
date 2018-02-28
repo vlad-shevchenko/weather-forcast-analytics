@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import weather.domain.City;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class WeatherGatherService {
 
     private List<WeatherDataProvider> weatherDataProviders;
     private EntityManager entityManager;
-    private List<String> cities = new ArrayList<>();
+    private List<City> cities = new ArrayList<>();
 
     @Autowired
     public WeatherGatherService(List<WeatherDataProvider> weatherDataProviders, EntityManager entityManager) {
@@ -40,7 +41,7 @@ public class WeatherGatherService {
     }
 
 
-    public List<String> getCities() {
+    public List<City> getCities() {
         return cities;
     }
 }
