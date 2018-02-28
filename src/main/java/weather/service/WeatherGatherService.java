@@ -29,17 +29,16 @@ public class WeatherGatherService {
     }
 
     @Scheduled(fixedRateString = "PT1M")
-    @Transactional()
+    @Transactional // TODO vlad: I'm not sure whether @Transactional works with futures (it most likely does not)
     public void gatherWeatherData() {
-        logger.info("Initiating gathering weather data");
-        cities.forEach(city ->
-            weatherDataProviders.forEach(wdp -> {
-                logger.info("Gathering weather data for {} using {}", city, wdp.getClass().getName());
-                wdp.getCurrentWeather(city).thenAccept(entityManager::persist);
-                wdp.getForecast(city).thenAccept(list -> list.forEach(entityManager::persist));
-            })
-        );
+        logger.info("Initiating gathering weather data. Cities: {}", cities.toString());
+        weatherDataProviders.forEach(wdp -> {
+            logger.info("Gathering weather data using {}", wdp.getClass().getName());
+            wdp.getCurrentWeather(cities).thenAccept(list -> list.forEach(entityManager::persist));
+            wdp.getForecast(cities).thenAccept(list -> list.forEach(entityManager::persist));
+        });
     }
+
 
     public List<String> getCities() {
         return cities;
