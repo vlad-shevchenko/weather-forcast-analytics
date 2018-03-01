@@ -1,6 +1,7 @@
 package weather.service;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.stereotype.Service;
 import weather.domain.*;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.joda.time.Period.minutes;
+import static org.joda.time.Period.hours;
 
 @Service
 public class TestWeatherDataProvider implements WeatherDataProvider {
@@ -29,7 +30,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
     public CompletableFuture<List<ActualWeather>> getCurrentWeather(Collection<City> cities) {
         return CompletableFuture.completedFuture(
                 cities.stream().map(
-                        city -> new ActualWeather(new WeatherKey(getName(), city, new DateTime()),
+                        city -> new ActualWeather(new WeatherKey(getName(), city, new DateTime(DateTimeZone.UTC)),
                                 new WeatherData(withVariation(10.0), withVariation(0.9), withVariation(300), withVariation(5.0))
                         )
                 ).collect(Collectors.toList())
@@ -43,7 +44,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
                 cities.stream().flatMap(
                         city -> IntStream.range(1, 15)
                                 .mapToObj((i) -> new Forecast(
-                                        new ForecastKey(getName(), city, new DateTime().plus(minutes(i)), new DateTime()),
+                                        new ForecastKey(getName(), city, new DateTime(DateTimeZone.UTC).plus(hours(i * 3)), new DateTime(DateTimeZone.UTC)),
                                         new WeatherData(withVariation(10.0, i * 0.05), withVariation(0.9, i * 0.05), withVariation(300, i * 0.05), withVariation(5.0, i * 0.05)))
                                 )
                 ).collect(Collectors.toList())
