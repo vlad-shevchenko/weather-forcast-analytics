@@ -15,12 +15,20 @@ app:
       - name: Kyiv
         longitude: 30.516666
         latitude: 50.433334
+        open-weather-map-id: 703448
       - name: Paris
         longitude: 2.35236
         latitude: 48.856461
+        open-weather-map-id: 2968815
       - name: New york
         longitude: -74.005966
         latitude: 40.714272
+        open-weather-map-id: 5128638
       - name: Zaporizhya
         longitude: 35.183331
         latitude: 47.816669
+        open-weather-map-id: 687700
+
+# TODO vlad: remove API keys from source
+    open-weather-map:
+      api-key: 2aa9f7c4d4583c84c771134f874ca906
