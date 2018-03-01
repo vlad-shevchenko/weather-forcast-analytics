@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import weather.domain.City;
+import weather.repository.ActualWeatherRepository;
+import weather.repository.ForecastRepository;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,23 +20,24 @@ public class WeatherGatherService {
     private static final Logger logger = LoggerFactory.getLogger(WeatherGatherService.class);
 
     private List<WeatherDataProvider> weatherDataProviders;
-    private EntityManager entityManager;
+    private ActualWeatherRepository actualWeatherRepository;
+    private ForecastRepository forecastRepository;
     private List<City> cities = new ArrayList<>();
 
     @Autowired
-    public WeatherGatherService(List<WeatherDataProvider> weatherDataProviders, EntityManager entityManager) {
+    public WeatherGatherService(List<WeatherDataProvider> weatherDataProviders, ActualWeatherRepository actualWeatherRepository, ForecastRepository forecastRepository) {
         this.weatherDataProviders = weatherDataProviders;
-        this.entityManager = entityManager;
+        this.actualWeatherRepository = actualWeatherRepository;
+        this.forecastRepository = forecastRepository;
     }
 
-    @Scheduled(fixedRateString = "PT1M")
-    @Transactional // TODO vlad: I'm not sure whether @Transactional works with futures (it most likely does not)
+    @Scheduled(fixedRateString = "PT1H")
     public void gatherWeatherData() {
         logger.info("Initiating gathering weather data. Cities: {}", cities.toString());
         weatherDataProviders.forEach(wdp -> {
             logger.info("Gathering weather data using {}", wdp.getClass().getName());
-            wdp.getCurrentWeather(cities).thenAccept(list -> list.forEach(entityManager::persist));
-            wdp.getForecast(cities).thenAccept(list -> list.forEach(entityManager::persist));
+            wdp.getCurrentWeather(cities).thenAccept(actualWeatherRepository::saveAll);
+            wdp.getForecast(cities).thenAccept(forecastRepository::saveAll);
         });
     }
 
