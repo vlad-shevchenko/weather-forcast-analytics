@@ -2,7 +2,6 @@ package weather.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Transient;
 
 @Embeddable
 public class City {
@@ -11,9 +10,6 @@ public class City {
     private String name;
     private double longitude;
     private double latitude;
-
-    @Transient
-    private int openWeatherMapId;
 
     public City() {
     }
@@ -48,11 +44,4 @@ public class City {
         this.latitude = latitude;
     }
 
-    public int getOpenWeatherMapId() {
-        return openWeatherMapId;
-    }
-
-    public void setOpenWeatherMapId(int openWeatherMapId) {
-        this.openWeatherMapId = openWeatherMapId;
-    }
 }
