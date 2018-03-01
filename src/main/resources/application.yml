@@ -28,3 +28,5 @@ app:
 # TODO vlad: remove API keys from source
     open-weather-map:
       api-key: 2aa9f7c4d4583c84c771134f874ca906
+    dark-sky:
+      api-key: 7872c231e9ae5f1b4382547c55e7c484
