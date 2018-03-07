@@ -15,7 +15,7 @@ class OpenWeatherMapWeatherDataProvider : WeatherDataProvider {
 
     override fun getName() = "OpenWeatherMap"
 
-    override fun getCurrentWeather(cities: MutableCollection<City>): CompletableFuture<List<ActualWeather>> {
+    override fun getCurrentWeather(cities: Collection<City>): CompletableFuture<Collection<ActualWeather>> {
         return CompletableFuture.supplyAsync {
             cities.map { city ->
                 khttp.get("http://api.openweathermap.org/data/2.5/weather", params = mapOf(
@@ -33,7 +33,7 @@ class OpenWeatherMapWeatherDataProvider : WeatherDataProvider {
         }
     }
 
-    override fun getForecast(cities: MutableCollection<City>): CompletableFuture<List<Forecast>> {
+    override fun getForecast(cities: Collection<City>): CompletableFuture<Collection<Forecast>> {
         return CompletableFuture.supplyAsync {
             cities.flatMap { city ->
                 khttp.get("http://api.openweathermap.org/data/2.5/forecast", params = mapOf(

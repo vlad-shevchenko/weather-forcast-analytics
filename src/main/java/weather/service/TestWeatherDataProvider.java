@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import weather.domain.*;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
     }
 
     @Override
-    public CompletableFuture<List<ActualWeather>> getCurrentWeather(Collection<City> cities) {
+    public CompletableFuture<Collection<ActualWeather>> getCurrentWeather(Collection<City> cities) {
         return CompletableFuture.completedFuture(
                 cities.stream().map(
                         city -> new ActualWeather(new WeatherKey(getName(), city, new DateTime(DateTimeZone.UTC)),
@@ -38,7 +37,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
     }
 
     @Override
-    public CompletableFuture<List<Forecast>> getForecast(Collection<City> cities) {
+    public CompletableFuture<Collection<Forecast>> getForecast(Collection<City> cities) {
         // I swear I don't do that in production
         return CompletableFuture.completedFuture(
                 cities.stream().flatMap(
