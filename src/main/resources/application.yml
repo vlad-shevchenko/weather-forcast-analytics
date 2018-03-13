@@ -1,15 +1,12 @@
-server.port: 8090
-
 spring:
   datasource:
-    url: jdbc:mysql://localhost/weather-forecast-analytics?user=root
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 app:
   weather:
@@ -32,3 +29,5 @@ app:
       api-key: 2aa9f7c4d4583c84c771134f874ca906
     dark-sky:
       api-key: 7872c231e9ae5f1b4382547c55e7c484
+    weatherbit:
+      api-key: 59dc3444bb0247218e6cc5ab4fdda0f9

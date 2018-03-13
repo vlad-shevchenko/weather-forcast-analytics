@@ -1,0 +1,8 @@
+server.port: 8090
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost/weather-forecast-analytics?user=root
+  jpa:
+    hibernate:
+      ddl-auto: create
