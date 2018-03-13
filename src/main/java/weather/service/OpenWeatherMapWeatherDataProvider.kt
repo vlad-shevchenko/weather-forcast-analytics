@@ -27,7 +27,7 @@ class OpenWeatherMapWeatherDataProvider : WeatherDataProvider {
                     val wind = it.getJSONObject("wind")
                     ActualWeather(
                         WeatherKey(name, city, DateTime(DateTimeZone.UTC)),
-                        WeatherData(main.getDouble("temp"), main.getDouble("humidity"), wind.getDouble("deg"), wind.getDouble("speed"))
+                        WeatherData(main.getDouble("temp"), main.getDouble("humidity"), wind.optDouble("deg", 0.0), wind.optDouble("speed", 0.0))
                 ) }
             }
         }
