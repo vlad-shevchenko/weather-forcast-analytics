@@ -131,7 +131,18 @@
 			<artifactId>scala-java8-compat_2.12</artifactId>
 			<version>0.8.0</version>
 		</dependency>
-		
+
+        <dependency>
+            <groupId>io.github.http-builder-ng</groupId>
+            <artifactId>http-builder-ng-apache</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<classifier>indy</classifier>
+			<version>3.0.0-alpha-1</version>
+		</dependency>
 
 	</dependencies>
 
