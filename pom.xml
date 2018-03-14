@@ -6,10 +6,9 @@
 	<groupId>weather</groupId>
 	<artifactId>forecast-analytics</artifactId>
 	<version>0.0.2</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>forecast-analytics</name>
-	<description></description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
