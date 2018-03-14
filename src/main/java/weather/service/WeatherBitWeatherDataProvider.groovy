@@ -49,7 +49,7 @@ class WeatherBitWeatherDataProvider implements WeatherDataProvider {
                         def data = json.data[0]
                         new ActualWeather(
                                 new WeatherKey(getName(), city, new DateTime(DateTimeZone.UTC)),
-                                new WeatherData(data.temp, data.rh, data.wind_dir, data.wind_spd)
+                                new WeatherData(data.temp, data.rh / 100, data.wind_dir, data.wind_spd)
                         )
                     }
                 }
@@ -68,7 +68,7 @@ class WeatherBitWeatherDataProvider implements WeatherDataProvider {
                         json.data.stream().map {
                             new Forecast(
                                     new ForecastKey(getName(), city, new DateTime(it.ts.longValue() * 1000), new DateTime(DateTimeZone.UTC)),
-                                    new WeatherData(it.temp, it.rh, it.wind_dir, it.wind_spd)
+                                    new WeatherData(it.temp + 273, it.rh / 100, it.wind_dir, it.wind_spd)
                             )
                         }
                     }

@@ -48,7 +48,7 @@ class DarkSkyWeatherDataProvider extends WeatherDataProvider {
           val currently = client.forecast(forecastRequest).getCurrently
           new ActualWeather(
             new WeatherKey(getName, city, new DateTime),
-            new WeatherData(currently.getTemperature, currently.getHumidity, currently.getWindBearing.doubleValue(), currently.getWindSpeed)
+            new WeatherData(currently.getTemperature + 273, currently.getHumidity, currently.getWindBearing.doubleValue(), currently.getWindSpeed)
           )
         }).toList.asJava.asInstanceOf[util.Collection[ActualWeather]]
     }).toJava.toCompletableFuture
@@ -60,7 +60,7 @@ class DarkSkyWeatherDataProvider extends WeatherDataProvider {
       val forecast = client.forecast(forecastRequest)
       forecast.getHourly.getData.asScala.map(dp => new Forecast(
         new ForecastKey(getName, city, new DateTime(dp.getTime.toEpochMilli, DateTimeZone.UTC), new DateTime),
-        new WeatherData(dp.getTemperature, dp.getHumidity, dp.getWindBearing.doubleValue(), dp.getWindSpeed)
+        new WeatherData(dp.getTemperature + 273, dp.getHumidity, dp.getWindBearing.doubleValue(), dp.getWindSpeed)
       ))
       // Daily forecast doesn't provide weather for specific time, but min and max values during the day. We don't support this as of now
 //      forecast.getDaily.getData.asScala

@@ -30,7 +30,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
         return CompletableFuture.completedFuture(
                 cities.stream().map(
                         city -> new ActualWeather(new WeatherKey(getName(), city, new DateTime(DateTimeZone.UTC)),
-                                new WeatherData(withVariation(10.0), withVariation(0.9), withVariation(300), withVariation(5.0))
+                                new WeatherData(withVariation(283.0), withVariation(0.9), withVariation(300), withVariation(5.0))
                         )
                 ).collect(Collectors.toList())
         );
@@ -44,7 +44,7 @@ public class TestWeatherDataProvider implements WeatherDataProvider {
                         city -> IntStream.range(1, 15)
                                 .mapToObj((i) -> new Forecast(
                                         new ForecastKey(getName(), city, new DateTime(DateTimeZone.UTC).plus(hours(i * 3)), new DateTime(DateTimeZone.UTC)),
-                                        new WeatherData(withVariation(10.0, i * 0.05), withVariation(0.9, i * 0.05), withVariation(300, i * 0.05), withVariation(5.0, i * 0.05)))
+                                        new WeatherData(withVariation(283.0, i * 0.05), withVariation(0.9, i * 0.05), withVariation(300, i * 0.05), withVariation(5.0, i * 0.05)))
                                 )
                 ).collect(Collectors.toList())
         );
