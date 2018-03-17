@@ -32,6 +32,7 @@ public class WeatherGatherService {
     }
 
     @Scheduled(cron = "0 10 * * * *")
+//    @Scheduled(fixedRateString = "PT1H")
     public void gatherWeatherData() {
         logger.info("Initiating gathering weather data. Cities: {}", cities.toString());
         weatherDataProviders.forEach(wdp -> {
