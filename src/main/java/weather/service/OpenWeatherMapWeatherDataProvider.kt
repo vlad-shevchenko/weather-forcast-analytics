@@ -16,6 +16,7 @@ class OpenWeatherMapWeatherDataProvider : WeatherDataProvider {
     override fun getName() = "OpenWeatherMap"
 
     override fun getCurrentWeather(cities: Collection<City>): CompletableFuture<Collection<ActualWeather>> {
+        val dateTime = DateTime(DateTimeZone.UTC)
         return CompletableFuture.supplyAsync {
             cities.map { city ->
                 khttp.get("http://api.openweathermap.org/data/2.5/weather", params = mapOf(
@@ -26,7 +27,7 @@ class OpenWeatherMapWeatherDataProvider : WeatherDataProvider {
                     val main = it.getJSONObject("main")
                     val wind = it.getJSONObject("wind")
                     ActualWeather(
-                        WeatherKey(name, city, DateTime(DateTimeZone.UTC)),
+                        WeatherKey(name, city, dateTime),
                         WeatherData(main.getDouble("temp"), main.getDouble("humidity") / 100, wind.optDouble("deg", 0.0), wind.optDouble("speed", 0.0))
                 ) }
             }
@@ -34,6 +35,7 @@ class OpenWeatherMapWeatherDataProvider : WeatherDataProvider {
     }
 
     override fun getForecast(cities: Collection<City>): CompletableFuture<Collection<Forecast>> {
+        val dateTime = DateTime(DateTimeZone.UTC)
         return CompletableFuture.supplyAsync {
             cities.flatMap { city ->
                 khttp.get("http://api.openweathermap.org/data/2.5/forecast", params = mapOf(
@@ -46,7 +48,7 @@ class OpenWeatherMapWeatherDataProvider : WeatherDataProvider {
                         val main = item.getJSONObject("main")
                         val wind = item.getJSONObject("wind")
                         Forecast(
-                                ForecastKey(name, city, DateTime(item.getLong("dt") * 1000, DateTimeZone.UTC), DateTime(DateTimeZone.UTC)),
+                                ForecastKey(name, city, DateTime(item.getLong("dt") * 1000, DateTimeZone.UTC), dateTime),
                                 WeatherData(main.getDouble("temp"), main.getDouble("humidity") / 100, wind.getDouble("deg"), wind.getDouble("speed"))
                         ) }
                     }
