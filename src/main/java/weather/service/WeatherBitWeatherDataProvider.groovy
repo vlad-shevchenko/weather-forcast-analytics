@@ -40,7 +40,7 @@ class WeatherBitWeatherDataProvider implements WeatherDataProvider {
 
     @Override
     CompletableFuture<? extends Collection<ActualWeather>> getCurrentWeather(Collection<City> cities) {
-        dateTime = new DateTime(DateTimeZone.UTC)
+        def dateTime = new DateTime(DateTimeZone.UTC)
         CompletableFuture.supplyAsync {
             cities.stream().map { city ->
                 currentWeather.get {
@@ -50,7 +50,7 @@ class WeatherBitWeatherDataProvider implements WeatherDataProvider {
                         def data = json.data[0]
                         new ActualWeather(
                                 new WeatherKey(getName(), city, dateTime),
-                                new WeatherData(data.temp, data.rh / 100, data.wind_dir, data.wind_spd)
+                                new WeatherData(data.temp + 273, data.rh / 100, data.wind_dir, data.wind_spd)
                         )
                     }
                 }
@@ -60,7 +60,7 @@ class WeatherBitWeatherDataProvider implements WeatherDataProvider {
 
     @Override
     CompletableFuture<? extends Collection<Forecast>> getForecast(Collection<City> cities) {
-        dateTime = new DateTime(DateTimeZone.UTC)
+        def dateTime = new DateTime(DateTimeZone.UTC)
         CompletableFuture.supplyAsync {
             cities.stream().flatMap { city ->
                 forecast.get {
