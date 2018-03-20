@@ -63,14 +63,19 @@ class DarkSkyWeatherDataProvider extends WeatherDataProvider {
       forecast.getHourly.getData.asScala.map(dp => new Forecast(
         new ForecastKey(getName, city, new DateTime(dp.getTime.toEpochMilli, DateTimeZone.UTC), dateTime),
         new WeatherData(dp.getTemperature + 273, dp.getHumidity, dp.getWindBearing.doubleValue(), dp.getWindSpeed)
+      )) ++
+      forecast.getDaily.getData.asScala
+        .filter(dp => new Duration(new DateTime(DateTimeZone.UTC), new DateTime(dp.getTemperatureMinTime.toEpochMilli, DateTimeZone.UTC)).isLongerThan(Duration.standardDays(2)))
+        .map(dp => new Forecast(
+          new ForecastKey(getName, city, new DateTime(dp.getTemperatureMinTime.toEpochMilli, DateTimeZone.UTC), dateTime),
+          new WeatherData(dp.getTemperatureMin + 273, dp.getHumidity, dp.getWindBearing.doubleValue(), dp.getWindSpeed)
+      )) ++
+      forecast.getDaily.getData.asScala
+        .filter(dp => new Duration(new DateTime(DateTimeZone.UTC), new DateTime(dp.getTemperatureMaxTime.toEpochMilli, DateTimeZone.UTC)).isLongerThan(Duration.standardDays(2)))
+        .map(dp => new Forecast(
+          new ForecastKey(getName, city, new DateTime(dp.getTemperatureMaxTime.toEpochMilli, DateTimeZone.UTC), dateTime),
+          new WeatherData(dp.getTemperatureMax + 273, dp.getHumidity, dp.getWindBearing.doubleValue(), dp.getWindSpeed)
       ))
-      // Daily forecast doesn't provide weather for specific time, but min and max values during the day. We don't support this as of now
-//      forecast.getDaily.getData.asScala
-//        .filter(dp => new Duration(new DateTime(DateTimeZone.UTC), new DateTime(dp.getTime, DateTimeZone.UTC)).isLongerThan(Duration.standardDays(2)))
-//        .map(dp => new Forecast(
-//          new ForecastKey(getName, city, new DateTime(dp.getTime, DateTimeZone.UTC), new DateTime),
-//          new WeatherData(dp.getApparentTemperatureMax, dp.getHumidity, dp.getWindBearing.doubleValue(), dp.getWindSpeed)
-//      ))
     }).toList.asJava.asInstanceOf[util.Collection[Forecast]]
     ).toJava.toCompletableFuture
   }
