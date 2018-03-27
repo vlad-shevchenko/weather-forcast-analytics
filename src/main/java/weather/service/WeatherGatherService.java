@@ -10,6 +10,7 @@ import weather.domain.City;
 import weather.repository.ActualWeatherRepository;
 import weather.repository.ForecastRepository;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,27 @@ public class WeatherGatherService {
         this.weatherDataProviders = weatherDataProviders;
         this.actualWeatherRepository = actualWeatherRepository;
         this.forecastRepository = forecastRepository;
+
+        String wdpList = weatherDataProviders.stream()
+                .map(wdp -> wdp.getClass().getName())
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("none");
+        logger.info("Init completed. Detected WeatherDataProviders: {}", wdpList);
+        if (weatherDataProviders.size() != 3) {
+            throw new IllegalArgumentException("Expected 3 WDPs");
+        }
+    }
+
+    @PostConstruct
+    public void init() {
+        String citiesList = cities.stream()
+                .map(City::getName)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("none");
+        logger.info("Bean post processing is completed. Detected Cities: {}", citiesList);
+        if (cities.size() != 4) {
+            throw new IllegalArgumentException("Expected 4 cities");
+        }
     }
 
     @Scheduled(cron = "0 10 * * * *")
