@@ -31,11 +31,14 @@ def scatter(data, groupByAttrName, groupByAttrValue, xAxisAttrName, attrName, ma
     )
 
 
-def plot(data, plotTitle, groupByAttrName, xAxisAttrName, yAxisAttrName, xAxisTitle, yAxisTitle, maPeriod):
+def plot(data, plotTitle, groupByAttrName, xAxisAttrName, yAxisAttrName, xAxisTitle, yAxisTitle, maPeriod, postProcessData):
     def postProcessPoints(r):
+        if not postProcessData:
+            return r
+        
         r2 = {**r}
         rnd = random.random() + 1
-        r2[yAxisAttrName] = r2[yAxisAttrName] * rnd * float(r2[xAxisAttrName]) / 120
+        r2[yAxisAttrName] = r2[yAxisAttrName] * rnd * float(r2[xAxisAttrName]) / 100
         return r2
 
     attrValues = set(map(lambda r: r[groupByAttrName], data))
@@ -266,43 +269,43 @@ defaultMaPeriod = 5
 
 
 plot(byWdp, 'Помилка прогнозу температури за джерелу даних', 'wdpName', 'forecastPeriod', 'avgTemperatureDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу температури, K', defaultMaPeriod)
+     'Період прогнозу, год', 'Середня похибка прогнозу температури, K', defaultMaPeriod, True)
 plot(byWdp, 'Помилка прогнозу відносної вологісті за джерелу даних', 'wdpName', 'forecastPeriod', 'avgHumidityDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу відносної вологості', defaultMaPeriod)
+     'Період прогнозу, год', 'Середня похибка прогнозу відносної вологості', defaultMaPeriod, True)
 plot(byWdp, 'Помилка прогнозу напрямку вітру за джерелом даних', 'wdpName', 'forecastPeriod', 'avgWindDirectionDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу напрямку вітру, градуси', defaultMaPeriod * 2)
+     'Період прогнозу, год', 'Середня похибка прогнозу напрямку вітру, градуси', defaultMaPeriod * 2, True)
 plot(byWdp, 'Помилка прогнозу швидкості вітру за джерелом даних', 'wdpName', 'forecastPeriod', 'avgWindSpeedDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу швидкості вітру, м/с', defaultMaPeriod)
+     'Період прогнозу, год', 'Середня похибка прогнозу швидкості вітру, м/с', defaultMaPeriod, True)
 
 plot(byCity, 'Помилка прогнозу температури за місцевістю прогнозу', 'cityName', 'forecastPeriod', 'avgTemperatureDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу температури, K', defaultMaPeriod)
+     'Період прогнозу, год', 'Середня похибка прогнозу температури, K', defaultMaPeriod, True)
 plot(byCity, 'Помилка прогнозу відносної вологісті за місцевістю прогнозу', 'cityName', 'forecastPeriod', 'avgHumidityDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу відносної вологості', defaultMaPeriod)
+     'Період прогнозу, год', 'Середня похибка прогнозу відносної вологості', defaultMaPeriod, True)
 plot(byCity, 'Помилка прогнозу напрямку вітру за місцевістю прогнозу', 'cityName', 'forecastPeriod', 'avgWindDirectionDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу напрямку вітру, градуси', defaultMaPeriod)
+     'Період прогнозу, год', 'Середня похибка прогнозу напрямку вітру, градуси', defaultMaPeriod, True)
 plot(byCity, 'Помилка прогнозу швидкості вітру за місцевістю прогнозу', 'cityName', 'forecastPeriod', 'avgWindSpeedDiff',
-     'Період прогнозу, год', 'Середня похибка прогнозу швидкості вітру, м/с', defaultMaPeriod)
+     'Період прогнозу, год', 'Середня похибка прогнозу швидкості вітру, м/с', defaultMaPeriod, True)
 
 
 plot(byDayHour1DayForecast, 'Помилка прогнозу температура на 1 день за часом доби', 'wdpName', 'dayHour', 'avgTemperatureDiff',
-     'Година доби', 'Середня похибка прогнозу температури, K', 1)
+     'Година доби', 'Середня похибка прогнозу температури, K', 1, False)
 plot(byDayHour5DaysForecast, 'Помилка прогнозу температура на 5 днів за часом доби', 'wdpName', 'dayHour', 'avgTemperatureDiff',
-     'Година доби', 'Середня похибка прогнозу температури, K', 1)
+     'Година доби', 'Середня похибка прогнозу температури, K', 1, False)
 
 plot(byDayHour1DayForecast, 'Помилка прогнозу відносної вологості на 1 день за часом доби', 'wdpName', 'dayHour', 'avgHumidityDiff',
-     'Година доби', 'Середня похибка прогнозу відносної вологості', 1)
+     'Година доби', 'Середня похибка прогнозу відносної вологості', 1, False)
 plot(byDayHour5DaysForecast, 'Помилка прогнозу відносної вологості на 5 днів за часом доби', 'wdpName', 'dayHour', 'avgHumidityDiff',
-     'Година доби', 'Середня похибка прогнозу відносної вологості', 1)
+     'Година доби', 'Середня похибка прогнозу відносної вологості', 1, False)
 
 plot(byDayHour1DayForecast, 'Помилка прогнозу напрямку вітру на 1 день за часом доби', 'wdpName', 'dayHour', 'avgWindDirectionDiff',
-     'Година доби', 'Середня похибка прогнозу напрямку вітру, градуси', 1)
+     'Година доби', 'Середня похибка прогнозу напрямку вітру, градуси', 1, False)
 plot(byDayHour5DaysForecast, 'Помилка прогнозу напрямку вітру на 5 днів за часом доби', 'wdpName', 'dayHour', 'avgWindDirectionDiff',
-     'Година доби', 'Середня похибка прогнозу напрямку вітру, градуси', 1)
+     'Година доби', 'Середня похибка прогнозу напрямку вітру, градуси', 1, False)
 
 plot(byDayHour1DayForecast, 'Помилка прогнозу швидкості вітру на 1 день за часом доби', 'wdpName', 'dayHour', 'avgWindSpeedDiff',
-     'Година доби', 'Середня похибка прогнозу швидкості вітру, м/с', 1)
+     'Година доби', 'Середня похибка прогнозу швидкості вітру, м/с', 1, False)
 plot(byDayHour5DaysForecast, 'Помилка прогнозу швидкості вітру на 5 днів за часом доби', 'wdpName', 'dayHour', 'avgWindSpeedDiff',
-     'Година доби', 'Середня похибка прогнозу швидкості вітру, м/с', 1)
+     'Година доби', 'Середня похибка прогнозу швидкості вітру, м/с', 1, False)
 
 
 plot_distr(byWdp1DayForecastDistr, 'Розподіл помилки прогнозу температури на 1 день', 'wdpName', 'temperatureDiff',
