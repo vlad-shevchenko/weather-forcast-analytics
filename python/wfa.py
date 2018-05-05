@@ -2,9 +2,16 @@ import random
 from itertools import groupby
 from collections import deque
 import itertools
+
+import numpy
 import pymysql as mysql
 import plotly
 import plotly.graph_objs as go
+
+
+def running_mean(x, N):
+    cumsum = numpy.cumsum(numpy.insert(x, 0, 0))
+    return (cumsum[N:] - cumsum[:-N]) / float(N)
 
 
 def moving_average(iterable, n):
@@ -20,7 +27,7 @@ def moving_average(iterable, n):
 
 def scatter(data, groupByAttrName, groupByAttrValue, xAxisAttrName, attrName, maPeriod, processPoints):
     rows = list(map(processPoints, filter(lambda x: x[groupByAttrName] == groupByAttrValue, data)))
-    forecastPeriods = list(map(lambda r: r[xAxisAttrName], rows))[maPeriod - 1:len(rows)]
+    forecastPeriods = list(map(lambda r: r[xAxisAttrName], rows))
     values = list(moving_average(list(map(lambda r: abs(r[attrName]), rows)), maPeriod))
 
     return go.Scatter(
@@ -268,9 +275,9 @@ with db.cursor() as cursor:
 defaultMaPeriod = 5
 
 
-plot(byWdp, 'Помилка прогнозу температури за джерелу даних', 'wdpName', 'forecastPeriod', 'avgTemperatureDiff',
+plot(byWdp, 'Помилка прогнозу температури за джерелом даних', 'wdpName', 'forecastPeriod', 'avgTemperatureDiff',
      'Період прогнозу, год', 'Середня похибка прогнозу температури, K', defaultMaPeriod, True)
-plot(byWdp, 'Помилка прогнозу відносної вологісті за джерелу даних', 'wdpName', 'forecastPeriod', 'avgHumidityDiff',
+plot(byWdp, 'Помилка прогнозу відносної вологісті за джерелом даних', 'wdpName', 'forecastPeriod', 'avgHumidityDiff',
      'Період прогнозу, год', 'Середня похибка прогнозу відносної вологості', defaultMaPeriod, True)
 plot(byWdp, 'Помилка прогнозу напрямку вітру за джерелом даних', 'wdpName', 'forecastPeriod', 'avgWindDirectionDiff',
      'Період прогнозу, год', 'Середня похибка прогнозу напрямку вітру, градуси', defaultMaPeriod * 2, True)
@@ -287,9 +294,9 @@ plot(byCity, 'Помилка прогнозу швидкості вітру за
      'Період прогнозу, год', 'Середня похибка прогнозу швидкості вітру, м/с', defaultMaPeriod, True)
 
 
-plot(byDayHour1DayForecast, 'Помилка прогнозу температура на 1 день за часом доби', 'wdpName', 'dayHour', 'avgTemperatureDiff',
+plot(byDayHour1DayForecast, 'Помилка прогнозу температури на 1 день за часом доби', 'wdpName', 'dayHour', 'avgTemperatureDiff',
      'Година доби', 'Середня похибка прогнозу температури, K', 1, False)
-plot(byDayHour5DaysForecast, 'Помилка прогнозу температура на 5 днів за часом доби', 'wdpName', 'dayHour', 'avgTemperatureDiff',
+plot(byDayHour5DaysForecast, 'Помилка прогнозу температури на 5 днів за часом доби', 'wdpName', 'dayHour', 'avgTemperatureDiff',
      'Година доби', 'Середня похибка прогнозу температури, K', 1, False)
 
 plot(byDayHour1DayForecast, 'Помилка прогнозу відносної вологості на 1 день за часом доби', 'wdpName', 'dayHour', 'avgHumidityDiff',
