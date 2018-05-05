@@ -1,3 +1,4 @@
+from itertools import groupby
 from collections import deque
 import itertools
 import pymysql as mysql
@@ -38,9 +39,39 @@ def plot(data, plotTitle, groupByAttrName, valueAttrName, xAxisAttrName, maPerio
     plotly.offline.iplot(fig)
 
 
+def scatter_distr(data, groupByAttrName, groupByAttrValue, xAxisAttrName, maPeriod, roundDigits, roundFactor):
+    rows = list(filter(lambda x: x[groupByAttrName] == groupByAttrValue, data))
+
+    x = []
+    y = []
+    rows = sorted(rows, key=lambda r: r[xAxisAttrName])
+    for k, g in groupby(rows, lambda r: round(r[xAxisAttrName] / roundFactor, roundDigits) * roundFactor):
+        y.append(len(list(g)))
+        x.append(k)
+
+    return go.Scatter(
+        x=x,
+        y=y,
+        mode='lines',
+        name=groupByAttrValue
+    )
+
+
+def plot_distr(data, plotTitle, groupByAttrName, xAxisAttrName, maPeriod, roundDigits, roundFactor):
+    attrValues = set(map(lambda r: r[groupByAttrName], data))
+    plotData = list(
+        map(lambda val: scatter_distr(data, groupByAttrName, val, xAxisAttrName, maPeriod, roundDigits, roundFactor),
+            attrValues))
+
+    layout = dict(title=plotTitle, xaxis=dict(title=xAxisAttrName), yaxis=dict(title='Number of forecasts'))
+    fig = dict(data=plotData, layout=layout)
+    plotly.offline.iplot(fig)
+
+
 plotly.offline.init_notebook_mode(connected=True)
 
-db = mysql.connect('url', 'user', 'password', 'db')
+# db = mysql.connect('wfa.cat0ol73r0ee.us-west-2.rds.amazonaws.com', 'wfa', 'PhACyCjHpMAnOatr', 'wfa')
+db = mysql.connect('localhost', 'root', '', 'wfa')
 
 with db.cursor() as cursor:
     cursor.execute("""
@@ -50,14 +81,14 @@ with db.cursor() as cursor:
         avg(aw.humidity - fc.humidity) as humidity_diff,
         avg(aw.wind_direction - fc.wind_direction) as wind_direction_diff,
         avg(aw.wind_speed - fc.wind_speed) as wind_speed_diff,
-        ROUND(TIMESTAMPDIFF(MINUTE, fc.forecast_creation_time, fc.target_time), -1) / 60 as forecast_period
+        round(timestampdiff(minute, fc.forecast_creation_time, fc.target_time), -1) / 60 as forecast_period
         from actual_weather as aw
             inner join forecast as fc
             on aw.wdp_name = fc.wdp_name and aw.name = fc.name 
             and aw.latitude = fc.latitude and aw.longitude = fc.longitude 
-            and TIMESTAMPDIFF(MINUTE, aw.date_time, fc.target_time) between -15 and 15
+            and timestampdiff(minute, aw.date_time, fc.target_time) between -15 and 15
     where fc.forecast_creation_time < fc.target_time
-        and ROUND(TIMESTAMPDIFF(MINUTE, fc.forecast_creation_time, fc.target_time), -1) < 120 * 60
+        and round(timestampdiff(minute, fc.forecast_creation_time, fc.target_time), -1) < 120 * 60
     group by aw.wdp_name, forecast_period
     order by forecast_period asc
     """)
@@ -74,23 +105,22 @@ with db.cursor() as cursor:
 
 with db.cursor() as cursor:
     cursor.execute("""
-    SELECT 
-        aw.name AS city_name, 
-        avg(aw.temperature - fc.temperature) AS temp_diff,
-        avg(aw.humidity - fc.humidity) AS humidity_diff,
-        avg(aw.wind_direction - fc.wind_direction) AS wind_direction_diff,
-        avg(aw.wind_speed - fc.wind_speed) AS wind_speed_diff,
-        ROUND(TIMESTAMPDIFF(MINUTE, fc.forecast_creation_time, fc.target_time), -1) / 60 AS forecast_period,  
-        count(*) AS data_points_count
-        FROM actual_weather AS aw
-            INNER JOIN forecast AS fc
-            ON aw.wdp_name = fc.wdp_name AND 
-            aw.name = fc.name AND aw.latitude = fc.latitude AND aw.longitude = fc.longitude 
-            AND TIMESTAMPDIFF(MINUTE, aw.date_time, fc.target_time) BETWEEN -15 AND 15
-    WHERE fc.forecast_creation_time < fc.target_time
-        and ROUND(TIMESTAMPDIFF(MINUTE, fc.forecast_creation_time, fc.target_time), -1) < 120 * 60
-    GROUP BY aw.name, forecast_period
-    ORDER BY forecast_period ASC
+    select 
+        aw.name as city_name, 
+        avg(aw.temperature - fc.temperature) as temp_diff,
+        avg(aw.humidity - fc.humidity) as humidity_diff,
+        avg(aw.wind_direction - fc.wind_direction) as wind_direction_diff,
+        avg(aw.wind_speed - fc.wind_speed) as wind_speed_diff,
+        round(timestampdiff(minute, fc.forecast_creation_time, fc.target_time), -1) / 60 as forecast_period  
+        from actual_weather as aw
+            inner join forecast as fc
+            on aw.wdp_name = fc.wdp_name and 
+            aw.name = fc.name and aw.latitude = fc.latitude and aw.longitude = fc.longitude 
+            and timestampdiff(minute, aw.date_time, fc.target_time) between -15 and 15
+    where fc.forecast_creation_time < fc.target_time
+        and round(timestampdiff(minute, fc.forecast_creation_time, fc.target_time), -1) < 120 * 60
+    group by aw.name, forecast_period
+    order by forecast_period asc
     """)
     byCity = []
     for row in cursor.fetchall():
@@ -116,7 +146,7 @@ with db.cursor() as cursor:
             inner join forecast as fc
             on aw.wdp_name = fc.wdp_name and 
             aw.name = fc.name and aw.latitude = fc.latitude and aw.longitude = fc.longitude 
-            and TIMESTAMPDIFF(MINUTE, aw.date_time, fc.target_time) between -15 and 15
+            and timestampdiff(minute, aw.date_time, fc.target_time) between -15 and 15
     where fc.forecast_creation_time < fc.target_time
     group by aw.wdp_name, hour_of_day
     order by hour_of_day asc
@@ -133,19 +163,24 @@ with db.cursor() as cursor:
         ))
 
 
-maPeriod = 5
+defaultMaPeriod = 5
 
-plot(byWdp, 'Temperature by WDP', 'wdpName', 'avgTemperatureDiff', 'forecastPeriod', maPeriod)
-plot(byWdp, 'Humidity by WDP', 'wdpName', 'avgHumidityDiff', 'forecastPeriod', maPeriod)
-plot(byWdp, 'Wind Direction by WDP', 'wdpName', 'avgWindDirectionDiff', 'forecastPeriod', maPeriod)
-plot(byWdp, 'Wind Speed by WDP', 'wdpName', 'avgWindSpeedDiff', 'forecastPeriod', maPeriod)
+plot(byWdp, 'Temperature by WDP', 'wdpName', 'avgTemperatureDiff', 'forecastPeriod', defaultMaPeriod)
+plot(byWdp, 'Humidity by WDP', 'wdpName', 'avgHumidityDiff', 'forecastPeriod', defaultMaPeriod)
+plot(byWdp, 'Wind Direction by WDP', 'wdpName', 'avgWindDirectionDiff', 'forecastPeriod', defaultMaPeriod)
+plot(byWdp, 'Wind Speed by WDP', 'wdpName', 'avgWindSpeedDiff', 'forecastPeriod', defaultMaPeriod)
 
-plot(byCity, 'Temperature by City', 'cityName', 'avgTemperatureDiff', 'forecastPeriod', maPeriod)
-plot(byCity, 'Humidity by City', 'cityName', 'avgHumidityDiff', 'forecastPeriod', maPeriod)
-plot(byCity, 'Wind Direction by City', 'cityName', 'avgWindDirectionDiff', 'forecastPeriod', maPeriod)
-plot(byCity, 'Wind Speed by City', 'cityName', 'avgWindSpeedDiff', 'forecastPeriod', maPeriod)
+plot(byCity, 'Temperature by City', 'cityName', 'avgTemperatureDiff', 'forecastPeriod', defaultMaPeriod)
+plot(byCity, 'Humidity by City', 'cityName', 'avgHumidityDiff', 'forecastPeriod', defaultMaPeriod)
+plot(byCity, 'Wind Direction by City', 'cityName', 'avgWindDirectionDiff', 'forecastPeriod', defaultMaPeriod)
+plot(byCity, 'Wind Speed by City', 'cityName', 'avgWindSpeedDiff', 'forecastPeriod', defaultMaPeriod)
 
 plot(byDayHour, 'Temperature by Hour of Day', 'wdpName', 'avgTemperatureDiff', 'dayHour', 1)
 plot(byDayHour, 'Humidity by Hour of Day', 'wdpName', 'avgHumidityDiff', 'dayHour', 1)
 plot(byDayHour, 'Wind Direction by Hour of Day', 'wdpName', 'avgWindDirectionDiff', 'dayHour', 1)
 plot(byDayHour, 'Wind Speed by Hour of Day', 'wdpName', 'avgWindSpeedDiff', 'dayHour', 1)
+
+plot_distr(byWdp, 'Temperature distribution', 'wdpName', 'avgTemperatureDiff', 1, 2, 6)
+plot_distr(byWdp, 'Humidity distribution', 'wdpName', 'avgHumidityDiff', 1, 2, 0.5)
+plot_distr(byWdp, 'Wind direction distribution', 'wdpName', 'avgWindDirectionDiff', 1, 1, 8)
+plot_distr(byWdp, 'Wind speed distribution', 'wdpName', 'avgWindSpeedDiff', 1, 2, 2)
