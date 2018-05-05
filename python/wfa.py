@@ -14,21 +14,10 @@ def running_mean(x, N):
     return (cumsum[N:] - cumsum[:-N]) / float(N)
 
 
-def moving_average(iterable, n):
-    it = iter(iterable)
-    d = deque(itertools.islice(it, n-1))
-    d.appendleft(0)
-    s = sum(d)
-    for elem in it:
-        s += elem - d.popleft()
-        d.append(elem)
-        yield s / n
-
-
 def scatter(data, groupByAttrName, groupByAttrValue, xAxisAttrName, attrName, maPeriod, processPoints):
     rows = list(map(processPoints, filter(lambda x: x[groupByAttrName] == groupByAttrValue, data)))
     forecastPeriods = list(map(lambda r: r[xAxisAttrName], rows))
-    values = list(moving_average(list(map(lambda r: abs(r[attrName]), rows)), maPeriod))
+    values = list(running_mean(list(map(lambda r: abs(r[attrName]), rows)), maPeriod))
 
     return go.Scatter(
         x=forecastPeriods,
